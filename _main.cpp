@@ -13,6 +13,10 @@ bool format_ok(const int &num,const int &L,const int &R){
     return num >= L && num <= R;
 }
 
+int max_value(const set<int> &s){
+    return s.empty() ? 0 : *(s.rbegin());
+}
+
 int current_time = 0, current_floor = 1, move_count = 0;
 bool go_up = true, go_down = false;
 set<int> query_floor;
@@ -22,24 +26,21 @@ void simulate(int t){
     while(current_time < t){ 
         query_floor.erase(current_floor);
 
+        if(go_down == false){
+            if(max_value(query_floor) > current_floor) go_up = true, go_down = false;
+            else go_up = false, go_down = true;
+        }
+
         if(go_down && go_up){
             early_exit("Fatal Error\nPlease write \"miha.tropin@gmail.com\" to update version");
+
+        }else if(go_up){
+            current_floor++;
+            move_count++;
 
         }else if(go_down && current_floor > 1){
             current_floor--;
             move_count++;
-
-        }else{
-            go_up = false, go_down = true;
-            for(int floor:query_floor){
-                if(floor > current_floor){
-                    go_up = true, go_down = false;
-                }
-            }
-            if(go_up){
-                current_floor++;
-                move_count++;
-            }
 
         }
         current_time++;
@@ -48,36 +49,57 @@ void simulate(int t){
 
 int call_count[H];
 
+struct query{
+    char type;
+    int t, floor;
+
+    bool operator<(const query& s) const{
+        return t < s.t || (t == s.t && type == '!');
+    }
+};
+
 
 int main(){
     freopen("in.txt", "r", stdin); freopen("out.txt", "w", stdout);
-    stringstream answer;
+
     int h; cin >> h;
+    if(!format_ok(h, 2, H - 1)) early_exit("Wrong Height of building\n" + er_text);
+
+    vector<query> querys;
     
     for(char type;cin >> type;){
-        int t; cin >> t;
-        if(!format_ok(t,current_time,T - 1)) early_exit("Wrong Value of time\n" + er_text);
+        int t = T, floor = 1; cin >> t;
+        if(!format_ok(t, current_time, T - 1)) early_exit("Wrong Value of time\n" + er_text);
 
-        if(type == '?'){
-            simulate(t);
-            answer << "Second " << t << " Floor = " << current_floor << '\n';
+        if(type == '!'){
+            cin >> floor;
+            if(!format_ok(floor, 2, h)) early_exit("Wrong Value of floor\n" + er_text);
 
-        }else if(type == '!'){
-            int floor; cin >> floor;
-            if(!format_ok(floor,2,h)) early_exit("Wrong Value of floor\n" + er_text);
-
-            query_floor.insert(floor);
-            call_count[floor]++;
-
-            simulate(t);
-        }else{
+        }else if(type != '?'){
             early_exit("Data input format Error\n" + er_text);
         }
-    }simulate(T);
-    cout << "Elevator positions: \n";
-    cout << answer.str() << '\n';
+        querys.emplace_back(query{type, t, floor});
+
+    }sort(querys.begin(), querys.end());
     
-    cout << "Building Height" << ' ' << h << '\n';
+    cout << "Elevator positions: \n";
+
+    for(const query &v:querys){
+        if(v.type == '?'){
+            simulate(v.t);
+            cout << "Second " << v.t << " Floor = " << current_floor << '\n';
+
+        }else if(v.type == '!'){
+            query_floor.insert(v.floor);
+            call_count[v.floor]++;
+
+            simulate(v.t);
+
+        }
+    }
+    simulate(T);
+    
+    cout << "\nBuilding Height" << ' ' << h << '\n';
     for(int i=2;i <= h;i++){
         cout << "Floor " << i << ": Count of calls = " << call_count[i] << '\n';
     }
