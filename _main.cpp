@@ -26,7 +26,7 @@ void simulate(int t){
     while(current_time < t){ 
         query_floor.erase(current_floor);
 
-        if(go_down == false){
+        if(go_down == false || current_floor == 1){
             if(max_value(query_floor) > current_floor) go_up = true, go_down = false;
             else go_up = false, go_down = true;
         }
@@ -60,9 +60,9 @@ struct query{
 
 
 int main(){
-    freopen("in.txt", "r", stdin); freopen("out.txt", "w", stdout);
+    freopen("data.txt", "r", stdin), freopen("out.txt", "w", stdout);
 
-    int h; cin >> h;
+    int h = 1; cin >> h;
     if(!format_ok(h, 2, H - 1)) early_exit("Wrong Height of building\n" + er_text);
 
     vector<query> querys;
@@ -81,6 +81,7 @@ int main(){
         querys.emplace_back(query{type, t, floor});
 
     }sort(querys.begin(), querys.end());
+
     
     cout << "Elevator positions: \n";
 
@@ -94,7 +95,6 @@ int main(){
             call_count[v.floor]++;
 
             simulate(v.t);
-
         }
     }
     simulate(T);
