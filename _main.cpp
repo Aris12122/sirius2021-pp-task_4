@@ -60,7 +60,7 @@ int main(){
 
         if(type == '?'){
             simulate(t);
-            answer << t << ' ' << current_floor << '\n';
+            answer << "Second " << t << " Floor = " << current_floor << '\n';
 
         }else if(type == '!'){
             int floor; cin >> floor;
@@ -74,13 +74,14 @@ int main(){
             early_exit("Data input format Error\n" + er_text);
         }
     }simulate(T);
-    cout << answer.str();
+    cout << "Elevator positions: \n";
+    cout << answer.str() << '\n';
     
-    cout << h << '\n';
+    cout << "Building Height" << ' ' << h << '\n';
     for(int i=2;i <= h;i++){
-        cout << i << ' ' << call_count[i] << '\n';
+        cout << "Floor " << i << ": Count of calls = " << call_count[i] << '\n';
     }
 
-    cout << move_count;
+    cout << "\nSummary moves = " << move_count;
     return 0;
 }
