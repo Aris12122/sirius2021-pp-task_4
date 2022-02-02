@@ -1,0 +1,12 @@
+Elevator positions: 
+Second 2 Floor = 3
+Second 3 Floor = 4
+Second 4 Floor = 3
+
+Building Height 5
+Floor 2: Count of calls = 0
+Floor 3: Count of calls = 1
+Floor 4: Count of calls = 1
+Floor 5: Count of calls = 0
+
+Summary moves = 6
